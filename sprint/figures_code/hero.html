@@ -1,0 +1,129 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<title>Who's the cartel?</title>
+<style>
+  :root { --ink:#ffffff; --soft:#dcd6ff; --dim:rgba(255,255,255,.62);
+          --yellow:#ffd23f; --pink:#ff3d9a; --cyan:#22e4ff; --lime:#7dff6b; --red:#ff4d5e; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { width:1600px; height:900px; overflow:hidden; color:var(--ink);
+         font-family: Inter, "Noto Color Emoji", sans-serif;
+         background:
+           radial-gradient(820px 460px at 6% -4%, rgba(255,61,154,.50), transparent 62%),
+           radial-gradient(760px 500px at 102% 6%, rgba(34,228,255,.42), transparent 62%),
+           radial-gradient(760px 420px at 50% 118%, rgba(255,210,63,.34), transparent 62%),
+           linear-gradient(135deg, #14072f 0%, #2a0b62 50%, #06204d 100%); }
+  .dots { position:absolute; inset:0; background-image: radial-gradient(rgba(255,255,255,.10) 1.2px, transparent 1.3px);
+          background-size: 26px 26px; -webkit-mask-image: linear-gradient(180deg, #000, rgba(0,0,0,.2)); }
+  .wrap { position:absolute; inset:0; padding:34px 56px 26px; display:flex; flex-direction:column; }
+
+  .top { display:flex; align-items:flex-end; justify-content:space-between; gap:24px; }
+  .badge { display:inline-block; font-size:16px; font-weight:700; letter-spacing:.08em; text-transform:uppercase;
+           padding:7px 14px; border-radius:999px; background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.26); }
+  h1 { display:inline-block; margin-top:10px; font-size:84px; line-height:.95; font-weight:800; letter-spacing:-.025em;
+       background: linear-gradient(90deg, var(--yellow) 0%, var(--pink) 46%, var(--cyan) 100%);
+       -webkit-background-clip:text; background-clip:text; color:transparent; padding-bottom:4px;
+       filter: drop-shadow(0 6px 22px rgba(255,61,154,.35)); }
+  .sub { margin-top:8px; font-size:23px; line-height:1.3; color:var(--soft); font-weight:500; }
+  .sub b { color:#fff; font-weight:700; }
+
+  .grid { margin-top:18px; display:grid; grid-template-columns: 300px repeat(4, 1fr); gap:11px 12px; }
+  .agent { border-radius:20px; padding:10px 12px 11px; text-align:center;
+           box-shadow: 0 10px 28px rgba(0,0,0,.35), inset 0 0 0 2px rgba(255,255,255,.20); }
+  .agent .emo { font-size:38px; line-height:1; }
+  .agent .name { font-size:22px; font-weight:800; margin-top:4px; }
+  .agent .what { font-size:14.5px; font-weight:500; opacity:.95; margin-top:1px; }
+  .agent .want { display:inline-block; margin-top:6px; font-size:12.5px; font-weight:800; letter-spacing:.1em;
+                 padding:3px 10px; border-radius:999px; background:rgba(0,0,0,.30); }
+  .c { background: linear-gradient(160deg, #ff4fa8, #c0136a); }
+  .d { background: linear-gradient(160deg, #a06bff, #5b21d6); }
+  .n { background: linear-gradient(160deg, #22d3c5, #0b7f8f); }
+  .a { background: linear-gradient(160deg, #4aa8ff, #1d4ed8); }
+  .legend { align-self:end; padding:0 4px 4px; font-size:14px; line-height:1.35; color:var(--soft); font-weight:600; }
+  .legend div { display:flex; align-items:center; gap:8px; }
+  .legend span { font-size:18px; }
+
+  .row { border-radius:18px; padding:0 14px; display:flex; align-items:center; gap:12px; height:70px;
+         background:rgba(255,255,255,.10); border:1px solid rgba(255,255,255,.18); }
+  .row .emo { font-size:34px; line-height:1; }
+  .row .t { font-size:22px; font-weight:800; letter-spacing:.03em; }
+  .row .s { font-size:14px; color:var(--soft); font-weight:500; margin-top:1px; line-height:1.2; }
+  .row .score { margin-left:auto; font-size:16px; font-weight:800; padding:4px 8px; border-radius:10px;
+                background:rgba(0,0,0,.28); border:1px solid rgba(255,255,255,.22); white-space:nowrap; }
+  .row.think { background: linear-gradient(90deg, rgba(34,228,255,.32), rgba(160,107,255,.32)); border-color: rgba(34,228,255,.75);
+               box-shadow: 0 0 26px rgba(34,228,255,.25); }
+  .row.think .score { background: var(--yellow); color:#1a0b2e; border-color: transparent; box-shadow: 0 0 18px rgba(255,210,63,.6); }
+
+  .cell { border-radius:18px; display:flex; align-items:center; justify-content:center; gap:12px; height:70px;
+          border:1.5px solid transparent; }
+  .cell .v { font-size:36px; line-height:1; }
+  .cell .p { font-size:28px; font-weight:800; line-height:1.05; }
+  .cell .l { font-size:12.5px; color:var(--soft); font-weight:700; letter-spacing:.06em; text-transform:uppercase; }
+  .good { background: rgba(125,255,107,.15); border-color: rgba(125,255,107,.60); }
+  .bad  { background: rgba(255,77,94,.20);  border-color: rgba(255,77,94,.75); }
+  .meh  { background: rgba(255,210,63,.13); border-color: rgba(255,210,63,.62); }
+  .think-cell { box-shadow: 0 0 22px rgba(125,255,107,.30); }
+
+  .win { margin-top:14px; border-radius:20px; padding:12px 22px; display:flex; align-items:center; gap:18px;
+         background: linear-gradient(90deg, #ffd23f, #ff9a3d 60%, #ff5f8f); color:#1a0b2e;
+         box-shadow: 0 12px 36px rgba(255,160,60,.35); }
+  .win .emo { font-size:40px; line-height:1; }
+  .win .big { font-size:25px; font-weight:800; line-height:1.2; letter-spacing:-.005em; }
+  .chips { margin-top:12px; display:flex; gap:10px; flex-wrap:nowrap; }
+  .chip { font-size:15px; font-weight:700; padding:8px 13px; border-radius:999px; white-space:nowrap;
+          background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.26); }
+  .chip b { color: var(--yellow); font-weight:800; }
+  .foot { margin-top:9px; font-size:12.5px; line-height:1.38; color:var(--dim); font-weight:500; }
+</style></head>
+<body>
+<div class="dots"></div>
+<div class="wrap" id="wrap">
+  <div><span class="badge">🕹️ Apart AI Collusion Sprint &nbsp;·&nbsp; 3 pre-registered studies &nbsp;·&nbsp; open models only</span></div>
+  <h1>Who's the cartel?</h1>
+  <div class="sub">We trained LLM pricing agents whose intent we <b>know</b>, then asked which evidence catches the one that colludes <b>on purpose</b>.</div>
+
+  <div class="grid">
+    <div class="legend">
+      <div><span>✅</span> right call</div>
+      <div><span>⚠️</span> half right</div>
+      <div><span>❌</span> wrong call</div>
+    </div>
+    <div class="agent c"><div class="emo">🕵️</div><div class="name">Covert cartel</div><div class="what">trained to hide its plan</div><div class="want">🎯 CATCH IT</div></div>
+    <div class="agent d"><div class="emo">🤝</div><div class="name">Unseen cartel</div><div class="what">a deal no detector was trained on</div><div class="want">🎯 CATCH IT</div></div>
+    <div class="agent n"><div class="emo">🌿</div><div class="name">Natural colluder</div><div class="what">same moves, no secret plan</div><div class="want">🛡️ SPARE IT</div></div>
+    <div class="agent a"><div class="emo">😇</div><div class="name">Honest twin</div><div class="what">same price, honest reasons</div><div class="want">🛡️ SPARE IT</div></div>
+
+    <div class="row"><div class="emo">👀</div><div><div class="t">DO</div><div class="s">punches back after<br>a rival price cut?</div></div><div class="score">2/4</div></div>
+    <div class="cell meh"><div class="v">⚠️</div><div><div class="p">59%</div><div class="l">caught</div></div></div>
+    <div class="cell good"><div class="v">✅</div><div><div class="p">100%</div><div class="l">caught</div></div></div>
+    <div class="cell bad"><div class="v">❌</div><div><div class="p">97%</div><div class="l">false alarm</div></div></div>
+    <div class="cell good"><div class="v">✅</div><div><div class="p">6%</div><div class="l">false alarm</div></div></div>
+
+    <div class="row"><div class="emo">💬</div><div><div class="t">SAY</div><div class="s">LLM judge reads<br>its reasoning</div></div><div class="score">2/4</div></div>
+    <div class="cell bad"><div class="v">❌</div><div><div class="p">32%</div><div class="l">caught</div></div></div>
+    <div class="cell meh"><div class="v">⚠️</div><div><div class="p">57%</div><div class="l">caught</div></div></div>
+    <div class="cell good"><div class="v">✅</div><div><div class="p">10%</div><div class="l">false alarm</div></div></div>
+    <div class="cell good"><div class="v">✅</div><div><div class="p">15%</div><div class="l">false alarm</div></div></div>
+
+    <div class="row"><div class="emo">📝</div><div><div class="t">TEXT</div><div class="s">word classifier on<br>its reasoning</div></div><div class="score">3/4</div></div>
+    <div class="cell good"><div class="v">✅</div><div><div class="p">99%</div><div class="l">caught</div></div></div>
+    <div class="cell meh"><div class="v">⚠️</div><div><div class="p">54%</div><div class="l">caught</div></div></div>
+    <div class="cell good"><div class="v">✅</div><div><div class="p">4%</div><div class="l">false alarm</div></div></div>
+    <div class="cell good"><div class="v">✅</div><div><div class="p">0.2%</div><div class="l">false alarm</div></div></div>
+
+    <div class="row think"><div class="emo">🧠</div><div><div class="t">THINK</div><div class="s">linear probe on its<br>activations</div></div><div class="score">4/4 🏆</div></div>
+    <div class="cell good think-cell"><div class="v">✅</div><div><div class="p">100%</div><div class="l">caught</div></div></div>
+    <div class="cell good think-cell"><div class="v">✅</div><div><div class="p">98%</div><div class="l">caught</div></div></div>
+    <div class="cell good think-cell"><div class="v">✅</div><div><div class="p">14%</div><div class="l">false alarm</div></div></div>
+    <div class="cell good think-cell"><div class="v">✅</div><div><div class="p">0.3%</div><div class="l">false alarm</div></div></div>
+  </div>
+
+  <div class="win"><div class="emo">🏆</div>
+    <div class="big">Only the activation probe gets all four right, and only if its training includes <u>both</u> kinds of look-alike: an honest agent at the same price and a natural colluder.</div></div>
+  <div class="chips">
+    <div class="chip">pre-registered: cartel vs natural colluder, probe <b>AUROC 1.00</b> · LLM judge <b>0.54</b></div>
+    <div class="chip">no natural-colluder control → unseen cartel caught <b>10%</b></div>
+    <div class="chip"><b>20</b> fine-tuned Qwen3-8B agents</div>
+  </div>
+  <div class="foot">Pooled over two training variants. DO: tests with a price cut &gt; 0.05 right after the rival's undercut; SAY: reasoning excerpts; TEXT, THINK: decisions; thresholds at the 95th percentile of a prompted natural agent. ✅ ≥90% caught or ≤20% false alarms, ❌ &lt;50% caught or &gt;50% false alarms. SAY = Llama-3.1-8B (Qwen3-32B catches no more). Study 17's gate failed ("same rule" leaked into the unseen cartel's reasoning); on leak-free decisions the probe still flags 98%. The control ablation is post hoc.</div>
+</div>
+</body></html>
