@@ -1,5 +1,9 @@
 # Who's the cartel? Testing collusion evidence on LLM pricing agents whose intent we know
 
+This README.md is AI-generated.
+
+
+
 ![Four agents, four kinds of evidence: only the activation probe makes all four calls right](figures/hero.png)
 
 An auditor who suspects LLM pricing agents of colluding can look at what the agents **do** (prices, retaliation
