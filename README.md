@@ -1,4 +1,4 @@
-# Who's the cartel? Testing collusion evidence on LLM pricing agents whose intent we know
+# Only the Right Negatives Expose a Covert LLM Cartel
 
 This README.md is AI-generated.
 
@@ -50,8 +50,8 @@ seeing the data).
   flags 0% of the cartels. A probe fit on C vs A, the obvious contrast, flags 100% of N and of D: it reads the
   fine-tuning lineage (this lineage probe was registered as exploratory).
 - **Say + do (sprint question 2.2, post hoc).** With a length-robust say score, an auditor that combines what an
-  agent says and does is no better than the better of the two signals alone: across the six contrasts of the paper's
-  Table 3 it gains at most 0.02 AUROC and loses up to 0.15 (C2 vs A2: 0.66, against 0.81 for do alone). The registered exploratory
+  agent says and does is no better than the better of the two signals alone: across the eight contrasts (C and D
+  against A and N) it gains at most 0.02 AUROC and loses up to 0.17 (D2 vs A2: 0.83, against 1.00 for do alone). The registered exploratory
   version scored each decision by its most suspicious excerpt; that score grows with trace length, and the cartels
   think 4-5 times longer than the honest twins.
 
@@ -75,7 +75,10 @@ honest control and a natural colluder trained the same way, and on a cartel desi
 The sprint started on 23 October 2026. The code, registrations and run outputs under [`preexisting/`](preexisting)
 were made before it and are unchanged except for their location; the one exception is Study 15's joint report,
 described below the table. Everything under [`sprint/`](sprint) and [`figures/`](figures), `verify_preregistration.py`
-and this README were made during the sprint.
+and this README were made during the sprint. In November 2026, after the sprint, the run zips were added to
+[`data/`](data) (their hashes were listed in `data/README.md` during the sprint), this README's title, say + do
+numbers, verification steps and limitations were corrected, and `verify_preregistration.py` learned to fetch the
+registration commits. No study code, registration or result changed.
 
 | | Study | What | When (+03:00) | Folder |
 |---|---|---|---|---|
@@ -108,16 +111,21 @@ text was written at 22:31 the same evening, before the first run, and pushed on 
 ("this run's" became "the sprint's") and the amendments that describe the split into four runs. All four runs
 registered the final hash at start.
 
-The registrations are in each study's folder (`PREREG_*.md`, `prereg_*.json`). To check the hashes, the code files
-and the registration commits:
+The registrations are in each study's folder (`PREREG_*.md`, `prereg_*.json`). The commits that registered them
+before their runs are in the repository where the studies were first registered,
+[cot-hint-span-causality](https://github.com/Ralolooaf/cot-hint-span-causality). To check the hashes, the code
+files and the registration commits:
 
 ```
-python verify_preregistration.py          # inside a git clone; data/ is used if present
+git clone https://github.com/Ralolooaf/covert-LLM-cartel
+cd covert-LLM-cartel
+python verify_preregistration.py     # fetches the registration commits, then prints ALL CHECKS PASSED
 ```
 
 It recomputes every predictions hash, compares each code file with the hashes in its registration, reads the
-registration each run stored in its output zip, and, in a clone, checks that each registration file is byte-identical
-to the version committed before its run. It needs only the Python standard library.
+registration each run stored in its output zip in `data/`, fetches the registration commits from
+cot-hint-span-causality if the clone lacks them, and checks that each registration file is byte-identical to the
+version committed before its run. It needs only git and the Python standard library.
 
 ## Repository map
 
@@ -177,7 +185,9 @@ acting model's hidden states (layers 12, 20 and 28; mean and last thinking token
 One model family, one market, synthetic matched states and short impulse responses rather than long games. Two seeds
 for N and D, three for C and A. The probe needs white-box access, and its threshold transfers imperfectly (it flags
 20% of N1 at a nominal 5%). Study 17's gate failed. No adversary was trained against the probe. The natural
-colluders are innocent only of a designed strategy: they still collude tacitly.
+colluders are innocent only of a designed strategy: they still collude tacitly. The probe was not compared with a
+trained reader outside the agent (the same probe on an untrained Qwen3-8B reading the same reasoning), so it is not
+yet shown that white-box access adds to what the words reveal.
 
 ## Dual use and release
 
@@ -191,11 +201,11 @@ MIT, see [LICENSE](LICENSE).
 
 ```
 @misc{aktas2026cartel,
-  title  = {Who's the cartel? Testing collusion evidence on LLM pricing agents whose intent we know},
+  title  = {Only the Right Negatives Expose a Covert LLM Cartel},
   author = {Aktas, Mustafa Ilker},
   year   = {2026},
   note   = {Apart Research AI Collusion Sprint},
-  url    = {https://github.com/Ralolooaf/cot-hint-span-causality}
+  url    = {https://github.com/Ralolooaf/covert-LLM-cartel}
 }
 ```
 

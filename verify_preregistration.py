@@ -9,8 +9,10 @@
    the registered "code hash as one Kaggle cell" (the same file without its trailing newline, as Kaggle stores it).
 3. If data/ holds the runs' output zips: reads the registration each run stored when it started and checks its
    predictions hash and code hash.
-4. In a git clone with full history: checks that each registration file is byte-identical to the version committed
-   to GitHub before the study's first run, and that preexisting/ matches the commit of 18 October 2026.
+4. In a git clone: checks that each registration file is byte-identical to the version committed to GitHub before
+   the study's first run, and that preexisting/ matches the commit of 18 October 2026. Those commits are in the
+   repository where the studies were first registered (REPO_URL); if the clone lacks them, the script fetches them
+   from there first (git fetch REPO_URL main; this adds no remote and changes no branch).
 Exits with status 1 if any check fails.
 """
 import hashlib
@@ -24,7 +26,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
 IST = timezone(timedelta(hours=3))
-REPO_URL = "https://github.com/Ralolooaf/cot-hint-span-causality"
+REPO_URL = "https://github.com/Ralolooaf/cot-hint-span-causality"     # where Studies 1-17 were registered
+THIS_URL = "https://github.com/Ralolooaf/covert-LLM-cartel"
 
 STUDIES = {
     "15": {"dir": "preexisting/study15_cartel_organisms", "md": "PREREG_STUDY15_SPRINT.md",
@@ -88,8 +91,22 @@ def git(*args):
     return r.stdout if r.returncode == 0 else None
 
 
+def fetch_registration_commits():
+    """The registration commits predate this repository; fetch them from REPO_URL if the clone lacks them."""
+    wanted = {c for S in STUDIES.values() for c, _, _ in S["commits"]} | {PREEXISTING_COMMIT}
+    wanted |= {S["pre_run_commit"][0] for S in STUDIES.values() if "pre_run_commit" in S}
+    missing = [c for c in sorted(wanted) if git("cat-file", "-e", c + "^{commit}") is None]
+    if not missing:
+        return
+    print(f"Fetching the {len(missing)} registration commits from {REPO_URL} ...")
+    if git("fetch", "--quiet", REPO_URL, "main") is None:
+        print(f"  could not fetch them; with network access run:  git fetch {REPO_URL} main")
+
+
 def main():
     have_git = git("rev-parse", "--git-dir") is not None
+    if have_git:
+        fetch_registration_commits()
     run_starts = {}
     for sid, S in STUDIES.items():
         d = ROOT / S["dir"]
@@ -134,13 +151,13 @@ def main():
                   f"{r.get('code_sha256_16')} at start, {t:%d %b %Y %H:%M:%S} (+03:00)" if t else f"run {run}")
         # registration files against the commits made before the runs
         if not have_git:
-            print(f"  skip  not a git clone; clone {REPO_URL} to check the registration commits")
+            print(f"  skip  not a git clone; run this inside a clone of {THIS_URL} to check the registration commits")
             continue
         for commit, old, now in S["commits"]:
             blob = git("show", f"{commit}:{old}")
             when = (git("show", "-s", "--format=%ci", commit) or b"?").decode().strip()
             if blob is None:
-                check(False, f"commit {commit[:7]} or {old} not found (shallow clone? run: git fetch --unshallow)")
+                check(False, f"commit {commit[:7]} or {old} not found (run: git fetch {REPO_URL} main)")
                 continue
             check(blob == (d / now).read_bytes(), f"{now} is byte-identical to {old} in commit {commit[:7]} ({when})")
         if "pre_run_commit" in S:
