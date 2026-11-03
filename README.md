@@ -77,8 +77,9 @@ were made before it and are unchanged except for their location; the one excepti
 described below the table. Everything under [`sprint/`](sprint) and [`figures/`](figures), `verify_preregistration.py`
 and this README were made during the sprint. In November 2026, after the sprint, the run zips were added to
 [`data/`](data) (their hashes were listed in `data/README.md` during the sprint), this README's title, say + do
-numbers, verification steps and limitations were corrected, and `verify_preregistration.py` learned to fetch the
-registration commits. No study code, registration or result changed.
+numbers, verification steps and limitations were corrected, `verify_preregistration.py` learned to fetch the
+registration commits, and Study 18 was registered in [`followup/`](followup). No study code, registration or result
+of Studies 15-17 changed.
 
 | | Study | What | When (+03:00) | Folder |
 |---|---|---|---|---|
@@ -89,6 +90,7 @@ registration commits. No study code, registration or result changed.
 | **sprint** | **16** | **Natural colluders N (seeds 1-2), length-matched to C; joint report over Studies 15-16** | **23-24 Oct** | [`sprint/study16_natural_colluders`](sprint/study16_natural_colluders) |
 | **sprint** | **17** | **Unseen cartel design D (seeds 1-2); joint report over Studies 15-17** | **24 Oct** | [`sprint/study17_unseen_cartel`](sprint/study17_unseen_cartel) |
 | **sprint** | | **Post-hoc analyses, figures, hero image, verification script, the paper** | **24-26 Oct** | [`sprint/`](sprint), [`figures/`](figures) |
+| after | 18 | The reader control: every decision's reasoning read by an untrained Qwen3-8B, the probe applied to its activations (registered, not yet run) | 4 Nov | [`followup/study18_reader_control`](followup/study18_reader_control) |
 
 Study 15's code, runs and registration predate the sprint. Its registered joint report (`study15_sj.py`, frozen on
 20 October) was executed on a CPU on 23 October, after the last of its four runs had finished; its output is
@@ -138,6 +140,8 @@ sprint/                       done during the sprint
   study16_natural_colluders/  registration, run W1 and joint report WJ code, post-hoc analysis, results/
   study17_unseen_cartel/      registration, run X1 and joint report XJ code, post-hoc analysis, results/
   figures_code/               make_figures.py (Figures 1-4), hero.html and render_hero.py
+followup/                     after the sprint
+  study18_reader_control/     registration and the one-cell run R1 (the reader control)
 preexisting/                  done before the sprint, unchanged
   study15_cartel_organisms/   registration, runs S1-S4, joint report SJ, pilot P1, results/
   update2/                    Studies 8-14 (README, code, results)
@@ -187,7 +191,8 @@ for N and D, three for C and A. The probe needs white-box access, and its thresh
 20% of N1 at a nominal 5%). Study 17's gate failed. No adversary was trained against the probe. The natural
 colluders are innocent only of a designed strategy: they still collude tacitly. The probe was not compared with a
 trained reader outside the agent (the same probe on an untrained Qwen3-8B reading the same reasoning), so it is not
-yet shown that white-box access adds to what the words reveal.
+yet shown that white-box access adds to what the words reveal. Study 18
+([`followup/study18_reader_control`](followup/study18_reader_control)) is registered to run that test.
 
 ## Dual use and release
 
