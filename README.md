@@ -1,7 +1,7 @@
 # Only the Right Negatives Expose a Covert LLM Cartel
 
 This README.md is AI-generated.
-
+For the paper: https://apartresearch.com/sprints/projects/only-the-right-negatives-expose-a-covert-llm-cartel-88bk
 
 
 ![Four agents, four kinds of evidence: only the activation probe makes all four calls right](figures/hero.png)
