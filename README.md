@@ -54,10 +54,19 @@ seeing the data).
   against A and N) it gains at most 0.02 AUROC and loses up to 0.17 (D2 vs A2: 0.83, against 1.00 for do alone). The registered exploratory
   version scored each decision by its most suspicious excerpt; that score grows with trace length, and the cartels
   think 4-5 times longer than the honest twins.
+- **Words or weights (Study 18, after the sprint, registered).** A sprint judge asked whether an outsider reading
+  only the reasoning could do as well as the probe. An untrained Qwen3-8B reads every decision's reasoning. At each
+  monitor's own natB threshold, the registered probe on its activations flags 91% of C and 54% of D, and a probe
+  refit on the same labelled data flags 91% and 61%. Inside the agents the probe flags 100% and 98%; natural
+  colluders are flagged 5.5-6% by the reader against 13.5% inside. The words carry C. On D, looking inside adds about 40
+  points (95% intervals 16-57 and 7-57), but the registered margin (more than 20 points, Holm) was not established
+  (p = 0.08 and 0.18), so the registered verdict is partial. Ranking D above N: AUROC 0.99 inside, 0.90-0.91 for
+  the reader.
 
 **What this suggests as an evidence standard.** Establish conduct with a counterfactual behavioural test against an
 action-matched honest control. Infer intent only from a detector that was validated against both an action-matched
-honest control and a natural colluder trained the same way, and on a cartel design it was not fit on.
+honest control and a natural colluder trained the same way, and on a cartel design it was not fit on. Then run the
+same detector on an untrained model reading the same reasoning, to see how much of its evidence an outsider has.
 
 <table>
 <tr>
@@ -78,8 +87,8 @@ described below the table. Everything under [`sprint/`](sprint) and [`figures/`]
 and this README were made during the sprint. In November 2026, after the sprint, the run zips were added to
 [`data/`](data) (their hashes were listed in `data/README.md` during the sprint), this README's title, say + do
 numbers, verification steps and limitations were corrected, `verify_preregistration.py` learned to fetch the
-registration commits, and Study 18 was registered in [`followup/`](followup). No study code, registration or result
-of Studies 15-17 changed.
+registration commits, and Study 18 was registered and run ([`followup/`](followup)). No study code, registration or
+result of Studies 15-17 changed.
 
 | | Study | What | When (+03:00) | Folder |
 |---|---|---|---|---|
@@ -90,7 +99,7 @@ of Studies 15-17 changed.
 | **sprint** | **16** | **Natural colluders N (seeds 1-2), length-matched to C; joint report over Studies 15-16** | **23-24 Oct** | [`sprint/study16_natural_colluders`](sprint/study16_natural_colluders) |
 | **sprint** | **17** | **Unseen cartel design D (seeds 1-2); joint report over Studies 15-17** | **24 Oct** | [`sprint/study17_unseen_cartel`](sprint/study17_unseen_cartel) |
 | **sprint** | | **Post-hoc analyses, figures, hero image, verification script, the paper** | **24-26 Oct** | [`sprint/`](sprint), [`figures/`](figures) |
-| after | 18 | The reader control: every decision's reasoning read by an untrained Qwen3-8B, the probe applied to its activations (registered, not yet run) | 4 Nov | [`followup/study18_reader_control`](followup/study18_reader_control) |
+| after | 18 | Words or weights: every decision's reasoning read by an untrained Qwen3-8B, the probe applied to its activations | 4 Nov | [`followup/study18_reader_control`](followup/study18_reader_control) |
 
 Study 15's code, runs and registration predate the sprint. Its registered joint report (`study15_sj.py`, frozen on
 20 October) was executed on a CPU on 23 October, after the last of its four runs had finished; its output is
@@ -107,16 +116,21 @@ and the joint reports check it.
 | 15 | `fb6cf891d3a4ba05` | first version [`7d407f4`](https://github.com/Ralolooaf/cot-hint-span-causality/commit/7d407f443173569f23b205776b3416d5d5df19d3), 20 Oct 22:08; final text [`1bfe962`](https://github.com/Ralolooaf/cot-hint-span-causality/commit/1bfe962abbf8adb69bfc020a79b3292bddbdba1b), 23 Oct 19:09 | S2 20 Oct 22:37 | H7 held; H6 and H11 did not |
 | 16 | `63102c4dc3a5603e` | [`1bfe962`](https://github.com/Ralolooaf/cot-hint-span-causality/commit/1bfe962abbf8adb69bfc020a79b3292bddbdba1b), 23 Oct 19:09:29 | W1 23 Oct 19:10:58 | P1, P2, P3 held; gate passed |
 | 17 | `3a9a78c3bb9616c6` | [`2e10892`](https://github.com/Ralolooaf/cot-hint-span-causality/commit/2e108925323323e8f65855c6accb22d4377fd4d2), 24 Oct 12:50:28 | X1 24 Oct 12:52:52 | Q1, Q2 held; **gate failed**, so reported, not interpreted |
+| 18 | `bb97056e75d3772c` | [`05df116`](https://github.com/Ralolooaf/covert-LLM-cartel/commit/05df1169903b9d5b159f4349df6055b4601f64e1), 4 Nov 02:40:06 | R1 4 Nov 02:37:53; first features saved 02:42:44 | W1 and W2 did not hold (p 0.08, 0.18): partial; gates passed |
 
 Study 15's registration was pushed before its runs (20 Oct 22:08, predictions hash `7fff1eea03eba385`). The final
 text was written at 22:31 the same evening, before the first run, and pushed on 23 Oct. It changes one word of H7
 ("this run's" became "the sprint's") and the amendments that describe the split into four runs. All four runs
 registered the final hash at start.
 
-The registrations are in each study's folder (`PREREG_*.md`, `prereg_*.json`). The commits that registered them
-before their runs are in the repository where the studies were first registered,
-[cot-hint-span-causality](https://github.com/Ralolooaf/cot-hint-span-causality). To check the hashes, the code
-files and the registration commits:
+Study 18's registration was committed 2 minutes after R1 started and 2.5 minutes before R1 saved its first features;
+R1's report came at 04:06. R1 stored the same predictions and code hashes at its start, and the registered code
+computed every result.
+
+The registrations are in each study's folder (`PREREG_*.md`, `prereg_*.json`). The commits that registered Studies
+15-17 are in the repository where the studies were first registered,
+[cot-hint-span-causality](https://github.com/Ralolooaf/cot-hint-span-causality); Study 18's is in this one. To check
+the hashes, the code files and the registration commits:
 
 ```
 git clone https://github.com/Ralolooaf/covert-LLM-cartel
@@ -141,7 +155,7 @@ sprint/                       done during the sprint
   study17_unseen_cartel/      registration, run X1 and joint report XJ code, post-hoc analysis, results/
   figures_code/               make_figures.py (Figures 1-4), hero.html and render_hero.py
 followup/                     after the sprint
-  study18_reader_control/     registration and the one-cell run R1 (the reader control)
+  study18_reader_control/     registration and the one-cell run R1 (words or weights); its outputs are in data/
 preexisting/                  done before the sprint, unchanged
   study15_cartel_organisms/   registration, runs S1-S4, joint report SJ, pilot P1, results/
   update2/                    Studies 8-14 (README, code, results)
@@ -189,10 +203,9 @@ acting model's hidden states (layers 12, 20 and 28; mean and last thinking token
 One model family, one market, synthetic matched states and short impulse responses rather than long games. Two seeds
 for N and D, three for C and A. The probe needs white-box access, and its threshold transfers imperfectly (it flags
 20% of N1 at a nominal 5%). Study 17's gate failed. No adversary was trained against the probe. The natural
-colluders are innocent only of a designed strategy: they still collude tacitly. The probe was not compared with a
-trained reader outside the agent (the same probe on an untrained Qwen3-8B reading the same reasoning), so it is not
-yet shown that white-box access adds to what the words reveal. Study 18
-([`followup/study18_reader_control`](followup/study18_reader_control)) is registered to run that test.
+colluders are innocent only of a designed strategy: they still collude tacitly. How much white-box access adds over
+the words is uncertain: an untrained reader of the same reasoning catches C and about half of D (Study 18), and the
+gap on D has a wide interval because each threshold rests on 48 natB decisions.
 
 ## Dual use and release
 

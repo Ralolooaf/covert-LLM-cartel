@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Check the three pre-registrations of this repository (standard library only).
+"""Check the pre-registrations of Studies 15-18 in this repository (standard library only).
 
   python verify_preregistration.py
 
@@ -12,7 +12,9 @@
 4. In a git clone: checks that each registration file is byte-identical to the version committed to GitHub before
    the study's first run, and that preexisting/ matches the commit of 18 October 2026. Those commits are in the
    repository where the studies were first registered (REPO_URL); if the clone lacks them, the script fetches them
-   from there first (git fetch REPO_URL main; this adds no remote and changes no branch).
+   from there first (git fetch REPO_URL main; this adds no remote and changes no branch). Study 18 was registered
+   in this repository, 2 minutes after its run R1 started: its commit is checked against the first data R1 saved
+   (the zip time of act_g1/ in its report zip, on Kaggle's UTC clock).
 Exits with status 1 if any check fails.
 """
 import hashlib
@@ -45,7 +47,12 @@ STUDIES = {
            "runs": {"X1": "study17_x1_small.zip"},
            "commits": [("2e108925323323e8f65855c6accb22d4377fd4d2", "update3/PREREG_STUDY17.md", "PREREG_STUDY17.md"),
                        ("2e108925323323e8f65855c6accb22d4377fd4d2", "update3/prereg_study17.json", "prereg_study17.json")]},
+    "18": {"dir": "followup/study18_reader_control", "md": "PREREG_STUDY18.md", "json": "prereg_study18.json",
+           "runs": {"R1": "study18_r1_report.zip"}, "this_repo": True,
+           "commits": [("05df1169903b9d5b159f4349df6055b4601f64e1", f"followup/study18_reader_control/{n}", n)
+                       for n in ("PREREG_STUDY18.md", "prereg_study18.json", "study18_r1.py")]},
 }
+STUDY18_FIRST_DATA = ("study18_r1_report.zip", "act_g1/")       # R1's first saved features
 PREEXISTING_COMMIT = "e4373075d10aff11677daeebfa1304e3117f4834"      # 18 Oct 2026, Studies 1-14
 PREEXISTING_MAP = [("update1/", "preexisting/update1/"), ("update2/", "preexisting/update2/"),
                    ("README.md", "preexisting/studies01_02/README.md"),
@@ -93,7 +100,7 @@ def git(*args):
 
 def fetch_registration_commits():
     """The registration commits predate this repository; fetch them from REPO_URL if the clone lacks them."""
-    wanted = {c for S in STUDIES.values() for c, _, _ in S["commits"]} | {PREEXISTING_COMMIT}
+    wanted = {c for S in STUDIES.values() if not S.get("this_repo") for c, _, _ in S["commits"]} | {PREEXISTING_COMMIT}
     wanted |= {S["pre_run_commit"][0] for S in STUDIES.values() if "pre_run_commit" in S}
     missing = [c for c in sorted(wanted) if git("cat-file", "-e", c + "^{commit}") is None]
     if not missing:
@@ -191,6 +198,26 @@ def main():
             c = datetime.fromisoformat(out.decode().strip()).astimezone(IST)
             first = min(starts)
             check(c < first, f"Study {sid}: commit {commit[:7]} at {c:%d %b %H:%M:%S}, first run at {first:%d %b %H:%M:%S}")
+        # Study 18: committed 2 minutes after R1 started, so checked against the first data R1 saved
+        commit = STUDIES["18"]["commits"][0][0]
+        out = git("show", "-s", "--format=%cI", commit)
+        z = ROOT / "data" / STUDY18_FIRST_DATA[0]
+        if out is None or not z.exists():
+            print("  skip  Study 18: commit or run outputs not available")
+        else:
+            c = datetime.fromisoformat(out.decode().strip()).astimezone(IST)
+            with zipfile.ZipFile(z) as zf:
+                saved = [datetime(*i.date_time, tzinfo=timezone.utc).astimezone(IST) for i in zf.infolist()
+                         if i.filename.startswith(STUDY18_FIRST_DATA[1])]
+            if not saved:
+                check(False, f"Study 18: no {STUDY18_FIRST_DATA[1]} files in {z.name}")
+            else:
+                check(c < min(saved), f"Study 18: commit {commit[:7]} at {c:%d %b %H:%M:%S}, first data saved by R1 at "
+                      f"{min(saved):%d %b %H:%M:%S} (zip time, Kaggle's UTC clock)")
+                start = run_starts.get(("18", "R1"))
+                if start:
+                    print(f"  info  R1 started at {start:%d %b %H:%M:%S}, {(c - start).total_seconds() / 60:.1f} min "
+                          f"before the commit, and stored the registered hashes at its start")
         print("\nPreexisting files against the commit of 18 October 2026")
         listing = git("ls-tree", "-r", "--name-only", PREEXISTING_COMMIT)
         if listing is None:

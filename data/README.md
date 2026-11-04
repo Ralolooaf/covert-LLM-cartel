@@ -14,6 +14,9 @@ reasoning, the impulse-response and framing probes, the judge scores and the sel
 | `study15_s4_small.zip` | S4, seed 3 | 15 (before the sprint) | 10.3 | `c1f145e272122337` |
 | `study16_w1_small.zip` | W1, N1 N2 seeds 1-2 | 16 (sprint) | 11.5 | `3fb402c507b6a5cf` |
 | `study17_x1_small.zip` | X1, D1 D2 seeds 1-2 and the prompted deal organism | 17 (sprint) | 14.0 | `0c0142dcc8646fa8` |
+| `study18_r1_report.zip` | R1, words or weights: registration, report, every decision's scores under all four monitors, G1's features | 18 (after the sprint) | 1.4 | `e7c076c9d7d446d6` |
+| `study18_r1_feat_s1.zip` … `study18_r1_feat_x1.zip` | R1: the untrained reader's features at 8 bits, one zip per run above | 18 (after the sprint) | 10-17 each | |
 
 The joint reports read these zips directly; see "Reproduce" in the [main README](../README.md). The pilot's data are
-not used by any registered report.
+not used by any registered report. Study 18's registered decisions recompute from its report zip's scores; with
+the feature zips its whole report recomputes (see [its README](../followup/study18_reader_control/README.md)).
